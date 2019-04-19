@@ -2,6 +2,8 @@
 
 Project anything you want onto your posters!
 
+![Alt text](https://i.imgur.com/MYQm0UN.jpg)
+
 Here are some examples of what it can do https://imgur.com/a/RD5Hks5
 
 # Installation 
