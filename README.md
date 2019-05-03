@@ -44,7 +44,7 @@ to achieve seamless use).
 # Controls
 ```
 MOUSE LEFT : Trace Poster
-SPACE : Toggle Transparent Mode
+SPACE : Cycle Transparent Mode
 BACKSPACE : Undo
 ESC : Quit
 S : Save as default
