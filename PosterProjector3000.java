@@ -30,9 +30,9 @@ public class PosterProjector3000 extends JFrame implements KeyListener, MouseLis
 	private ArrayList<BufferedImage> frameBuffer;
 	private ArrayList<Poster> posters;
 	
-	private boolean transparent;
+	private int transparent;
 	private boolean showHelp;
-	private final String HELP_MESSAGE = "#Poster Projector 3000%\n\nMOUSE LEFT : Trace Poster\nSPACE : Toggle Transparent Mode\nBACKSPACE : Undo\nESC : Quit\nS : Save as default\nD : Load default\nF : Delete all\nH : Toggle help";
+	private final String HELP_MESSAGE = "#Poster Projector 3000%\n\nMOUSE LEFT : Trace Poster\nSPACE : Cycle Transparent Mode\nBACKSPACE : Undo\nESC : Quit\nS : Save as default\nD : Load default\nF : Delete all\nH : Toggle help";
 	private Font font;
 	private final int MAX_BUFFER_SIZE = 3;
 	private final boolean ENABLE_AA = true;
@@ -51,7 +51,7 @@ public class PosterProjector3000 extends JFrame implements KeyListener, MouseLis
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		
-		transparent = false;
+		transparent = 0;
 		showHelp = false;
 		mousePoint = new Point(0,0);
 		frameBuffer = new ArrayList<BufferedImage>();
@@ -80,18 +80,45 @@ public class PosterProjector3000 extends JFrame implements KeyListener, MouseLis
 	}
 	
 	public void paint(Graphics g) {
-		if(!transparent) {
+		if(transparent == 0) {
 			if(frameBuffer.size() > 0) {
 				g.drawImage(frameBuffer.get(0), 0,0,null);
 				frameBuffer.remove(0);
 			}
-		}else {
+		}else if(transparent == 1){
 			this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 			this.setBackground(new Color(0,0,0,0));
 			super.paint(g);
 			g.drawImage(createTransparentImage(), 0,0,null);
+		}else {
+			this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+			this.setBackground(new Color(0,0,0,0));
+			super.paint(g);
+			g.drawImage(createInverseTransparentImage(), 0,0,null);
 		}
 		
+	}
+	
+	private BufferedImage createInverseTransparentImage() {
+		BufferedImage out = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+
+		frameBuffer = new ArrayList<BufferedImage>();
+		buffer();
+		
+		for(int x = 0; x < frameBuffer.get(0).getWidth();x++) {
+			for(int y = 0; y < frameBuffer.get(0).getHeight();y++) {
+				if(frameBuffer.get(0).getRGB(x, y) == Color.WHITE.getRGB()) {
+					out.setRGB(x, y, Color.WHITE.getRGB());
+				}else {
+					Color c1 = new Color(frameBuffer.get(0).getRGB(x, y));
+					int greyscale = (c1.getRed() + c1.getGreen() + c1.getBlue()) / 3;
+					Color c2 = new Color(255,255,255, greyscale);
+					out.setRGB(x, y, c2.getRGB());
+				}
+			}
+		}
+		
+		return out;
 	}
 	
 	private BufferedImage createTransparentImage() {
@@ -187,7 +214,7 @@ public class PosterProjector3000 extends JFrame implements KeyListener, MouseLis
 	}
 	
 	private void saveAsDefault() {
-		if(!transparent) {
+		if(transparent == 0) {
 			
 			String data = "";
 			
@@ -211,10 +238,7 @@ public class PosterProjector3000 extends JFrame implements KeyListener, MouseLis
 	}
 	
 	private void loadDefault() {
-		if(!transparent) {
-			
-			
-			
+		if(transparent == 0) {
 			String in = "";
 			
 			try(FileReader fileReader = new FileReader(DEFAULT_SAVE_LOCATION)) {  
@@ -249,25 +273,30 @@ public class PosterProjector3000 extends JFrame implements KeyListener, MouseLis
 		}
 	}
 	
-	private void toggleTransparentMode() {
-		if(!transparent) {
+	private void cycleTransparentMode() {
+		if(transparent == 0) {
 			showHelp = false;
 			render.stop();
 			buffer.stop();
 			this.setVisible(false);
-			transparent = true;
+			transparent = 1;
+			this.setVisible(true);
+		}else if(transparent == 1){
+			this.setVisible(false);
+			transparent = 2;
 			this.setVisible(true);
 		}else {
-			transparent = false;
-			render.start();
+			transparent = 0;
 			buffer.start();
+			render.start();
 		}
 	}
 	
 	private void toggleHelp() {
-		if(!transparent) {
+		if(transparent == 0) {
 			if(!showHelp) {
 				showHelp = true;
+				System.out.println(HELP_MESSAGE);
 			}else {
 				showHelp = false;
 			}
@@ -275,7 +304,7 @@ public class PosterProjector3000 extends JFrame implements KeyListener, MouseLis
 	}
 	
 	private void undo() {
-		if(!transparent) {
+		if(transparent == 0) {
 			
 			if(posters.size() == 0) {
 				return;
@@ -291,7 +320,7 @@ public class PosterProjector3000 extends JFrame implements KeyListener, MouseLis
 	}
 	
 	private void deleteAll() {
-		if(!transparent) {
+		if(transparent == 0) {
 			posters = new ArrayList<Poster>();
 		}
 	}
@@ -325,7 +354,7 @@ public class PosterProjector3000 extends JFrame implements KeyListener, MouseLis
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_BACK_SPACE: undo(); break;
-		case KeyEvent.VK_SPACE: toggleTransparentMode(); break;
+		case KeyEvent.VK_SPACE: cycleTransparentMode(); break;
 		case KeyEvent.VK_S: saveAsDefault(); break;
 		case KeyEvent.VK_D: loadDefault(); break;
 		case KeyEvent.VK_F: deleteAll(); break;
