@@ -49,7 +49,7 @@ Transparent mode allows for anything ( Video / Image / Simulation / Website / Et
 Press the space bar to cycle modes: (Transparent 1, Transparent 2, Calibration ). 
 
 All hotkeys except Space and Escape are disabled in transparent mode. 
-
+```
 Transparent 1
  Dark Area - Unchanged
  Poster Area - Transparent
@@ -59,7 +59,7 @@ Transparent 2
 Calibration
  Dark Area - Unchanged.
  Poster Area - Unchanged
-
+```
 
 # Controls
 ```
