@@ -1,5 +1,15 @@
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 
 public class Poster {
@@ -43,6 +53,7 @@ public class Poster {
 			case 3: d = (Point) p.clone(); size++; break;
 			default: break;
 		}
+		
 	}
 	
 	public void remove() {
@@ -61,6 +72,10 @@ public class Poster {
 		}
 		
 		return false;
+	}
+	
+	public int getSize() {
+		return getArray().length;
 	}
 	
 	public Point[] getArray() {
@@ -96,5 +111,9 @@ public class Poster {
 		return out;
 
 	}
+	
+	
+	
+	
 	
 }
