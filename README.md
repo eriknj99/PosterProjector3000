@@ -50,26 +50,25 @@ Press the space bar to cycle modes: (Transparent 1, Transparent 2, Calibration )
 
 All hotkeys except Space and Escape are disabled in transparent mode. 
 ```
-Transparent 1
- Dark Area - Unchanged
- Poster Area - Transparent
-Transparent 2
- Dark Area - Transparent
- Poster Area - Unchanged
 Calibration
  Dark Area - Unchanged.
  Poster Area - Unchanged
+Transparent 1
+ Dark Area - Unchanged
+ Poster Area - Transparent
 ```
 
 # Controls
 ```
-MOUSE LEFT : Trace Poster
-SPACE : Cycle Transparent Mode
-BACKSPACE : Undo
-ESC : Quit
-S : Save as default
-D : Load default
-F : Delete all
-H : Toggle help
+CLICK        :    Trace Poster
+CTRL+CLICK   :    Delete Poster
+BACKSPACE    :    Undo
+SPACE        :    Toggle Mode (Note : Most functions do not work in transparent mode)
+CTRL+S       :    Save Current as Default
+CTRL+D       :    Load Default (Destructive)
+D            :    Load Default (Non-Destructive)
+L            :    Toggle Logo
+C            :    Toggle Cursor
+H            :    Toggle Help
 ```
  
