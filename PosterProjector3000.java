@@ -254,6 +254,29 @@ public class PosterProjector3000 extends JFrame implements MouseListener, MouseM
 		return out;
 	}
 
+    public BufferedImage getInvertedTransparentImage() {
+		  BufferedImage frame = roto.frame;
+		  BufferedImage out = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+		
+		  for(int x = 0; x < this.getWidth(); x++) {
+			  for(int  y = 0; y < this.getHeight(); y++) {
+				  if(frame.getRGB(x, y) == Color.WHITE.getRGB()) {
+					  out.setRGB(x, y, new Color(255,255,255,255).getRGB());
+				  }else {
+					  Color c = new Color(frame.getRGB(x, y));
+					  int greyscale = (int)((c.getRed() + c.getGreen() + c.getBlue()) / 3.0);
+					  if(c.getRed() == c.getGreen() && c.getRed()== c.getBlue()) {
+						  out.setRGB(x, y, new Color(255,255,255,greyscale).getRGB());
+					  }else {
+						  out.setRGB(x, y, new Color(c.getRed(),c.getGreen(),c.getBlue(),nonWhiteTransparency).getRGB());
+					  }
+				  }
+			  }
+		  }
+		  return out;
+	  }
+
+
 	public void saveAsDefault() {
 		String data = "";
 		
@@ -333,7 +356,19 @@ public class PosterProjector3000 extends JFrame implements MouseListener, MouseM
 			roto.frame = getTransparentImage();
 			repaint();
 			mode = 1;
-		}else {
+		}else if(mode == 1){
+      //Turn off help message before switching to transparent.
+			help = false;
+			boolean tmpC = hideCursor;
+			hideCursor = true;
+			render();
+			hideCursor = tmpC;
+			tmr.stop();
+			repaint();
+			roto.frame = getInvertedTransparentImage();
+			repaint();
+      mode = 2;
+    }else{
 			tmr.start();
 			mode = 0;
 		}
