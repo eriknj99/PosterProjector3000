@@ -24,7 +24,7 @@ public class Main {
 			System.out.println("Some/All graphics requirements are not available, some transparency features may not work.\nYou may need to enable display compositing.");
 		}
 		
-		new PosterProjector3000();
+		new PosterProjector3000(true);
 
 	}
 

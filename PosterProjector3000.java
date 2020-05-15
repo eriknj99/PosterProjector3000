@@ -72,7 +72,7 @@ public class PosterProjector3000 extends JFrame implements MouseListener, MouseM
 	public final String DEFAULT_LOCATION = "default.pst";
 	public int nonWhiteTransparency = 123;
 	
-	public PosterProjector3000() {
+	public PosterProjector3000(boolean loadDefault) {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setUndecorated(true);
 		this.setBackground(new Color(1f,1f,1f,0f));
@@ -104,6 +104,11 @@ public class PosterProjector3000 extends JFrame implements MouseListener, MouseM
 		this.setVisible(true);	
 		
 		tmr.start();
+
+    if(loadDefault){
+      loadDefault();
+      cycleMode();
+    }
 	}
 	
 	private class RotoscopePanel extends JPanel {
@@ -150,113 +155,113 @@ public class PosterProjector3000 extends JFrame implements MouseListener, MouseM
 		}
 		//Render Logo
 		if(logo) {
-			String[] lines = LOGO_TXT.split("\n");
-    		g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
-    		int maxW = 0;
-    		for(int i = 0; i < lines.length; i++) {
-    			int lineW = g.getFontMetrics().charsWidth(lines[i].toCharArray(), 0, lines[i].length());
-    			if(lineW > maxW) {
-    				maxW = lineW;
-    			}
-    		}
-	    	int currX = (int)((this.getWidth() / 2.0) - (maxW / 2.0));
-	    	int currY = (int)((this.getHeight() / 2.0) - ((g.getFontMetrics().getHeight() * lines.length)/2.0));
-	    	
-	    	for(int i = 0; i < lines.length; i++) {
-	    		g.drawString(lines[i], currX, currY);
-	    		currY += g.getFontMetrics().getHeight();
-	    	}
-		}
-		
-		//Render Posters
-		for(int i = 0; i < posters.size(); i++) {
-			//Fill Complete posters
-			if(posters.get(i).isComplete()) {
-				g.fill(posters.get(i).getPolygon()); 
-			}else {
-				g.setStroke(new BasicStroke(2));
-				Point[] pts = posters.get(i).getArray();
-				switch(posters.get(i).getSize()) {
-					case 0: break; //Don't draw anything
-					
-					case 1: 
-					case 2: 
-						for(int j = 0; j < pts.length - 1; j++) {
-							g.drawLine(pts[j].x, pts[j].y, pts[j+1].x, pts[j+1].y);
-						}
-						g.drawLine(pts[pts.length - 1].x, pts[pts.length -1].y, mouseLoc.x, mouseLoc.y);
-					break; //Connect the dots and connect last to mouseloc.
-					
-					case 3: 
-						for(int j = 0; j < pts.length - 1; j++) {
-							g.drawLine(pts[j].x, pts[j].y, pts[j+1].x, pts[j+1].y);
-						}
-						g.drawLine(pts[pts.length - 1].x, pts[pts.length -1].y, mouseLoc.x, mouseLoc.y);
-						g.drawLine(pts[0].x, pts[0].y, mouseLoc.x, mouseLoc.y);
-					break; //Connect the dots and connect last and first to mouseloc
-				}
-			}
-		}
-		
+        String[] lines = LOGO_TXT.split("\n");
+          g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 16));
+          int maxW = 0;
+          for(int i = 0; i < lines.length; i++) {
+            int lineW = g.getFontMetrics().charsWidth(lines[i].toCharArray(), 0, lines[i].length());
+            if(lineW > maxW) {
+              maxW = lineW;
+            }
+          }
+          int currX = (int)((this.getWidth() / 2.0) - (maxW / 2.0));
+          int currY = (int)((this.getHeight() / 2.0) - ((g.getFontMetrics().getHeight() * lines.length)/2.0));
+          
+          for(int i = 0; i < lines.length; i++) {
+            g.drawString(lines[i], currX, currY);
+            currY += g.getFontMetrics().getHeight();
+          }
+      }
+      
+      //Render Posters
+      for(int i = 0; i < posters.size(); i++) {
+        //Fill Complete posters
+        if(posters.get(i).isComplete()) {
+          g.fill(posters.get(i).getPolygon()); 
+        }else {
+          g.setStroke(new BasicStroke(2));
+          Point[] pts = posters.get(i).getArray();
+          switch(posters.get(i).getSize()) {
+            case 0: break; //Don't draw anything
+            
+            case 1: 
+            case 2: 
+              for(int j = 0; j < pts.length - 1; j++) {
+                g.drawLine(pts[j].x, pts[j].y, pts[j+1].x, pts[j+1].y);
+              }
+              g.drawLine(pts[pts.length - 1].x, pts[pts.length -1].y, mouseLoc.x, mouseLoc.y);
+            break; //Connect the dots and connect last to mouseloc.
+            
+            case 3: 
+              for(int j = 0; j < pts.length - 1; j++) {
+                g.drawLine(pts[j].x, pts[j].y, pts[j+1].x, pts[j+1].y);
+              }
+              g.drawLine(pts[pts.length - 1].x, pts[pts.length -1].y, mouseLoc.x, mouseLoc.y);
+              g.drawLine(pts[0].x, pts[0].y, mouseLoc.x, mouseLoc.y);
+            break; //Connect the dots and connect last and first to mouseloc
+          }
+        }
+      }
+      
 
-		if(!hideCursor) {
-			int targetSize = 20;
-			if(ctrl) {
-				g.setColor(Color.RED);
-				g.setStroke(new BasicStroke(2));
-				g.drawLine(mouseLoc.x+targetSize, mouseLoc.y, mouseLoc.x-targetSize, mouseLoc.y);
-				g.drawLine(mouseLoc.x, mouseLoc.y + targetSize, mouseLoc.x, mouseLoc.y - targetSize);
+      if(!hideCursor) {
+        int targetSize = 20;
+        if(ctrl) {
+          g.setColor(Color.RED);
+          g.setStroke(new BasicStroke(2));
+          g.drawLine(mouseLoc.x+targetSize, mouseLoc.y, mouseLoc.x-targetSize, mouseLoc.y);
+          g.drawLine(mouseLoc.x, mouseLoc.y + targetSize, mouseLoc.x, mouseLoc.y - targetSize);
 
-				g.drawOval(mouseLoc.x-targetSize, mouseLoc.y - targetSize, 2 * targetSize, 2 * targetSize);
-				g.setColor(Color.WHITE);
-				g.fillOval(mouseLoc.x-2, mouseLoc.y-2, 5, 5);
-				g.setColor(Color.RED);
-				g.drawOval(mouseLoc.x-2, mouseLoc.y-2, 5, 5);
-			}else {
-				g.setColor(Color.GREEN);
-				g.setStroke(new BasicStroke(2));
-				g.drawLine(mouseLoc.x+targetSize, mouseLoc.y, mouseLoc.x-targetSize, mouseLoc.y);
-				g.drawLine(mouseLoc.x, mouseLoc.y + targetSize, mouseLoc.x, mouseLoc.y - targetSize);
-			
-				g.drawOval(mouseLoc.x-targetSize, mouseLoc.y - targetSize, 2 * targetSize, 2 * targetSize);
-				g.setColor(Color.WHITE);
-				g.fillOval(mouseLoc.x-2, mouseLoc.y-2, 5, 5);
-				g.setColor(Color.GREEN);
-				g.drawOval(mouseLoc.x-2, mouseLoc.y-2, 5, 5);
-			}
-			
-			
+          g.drawOval(mouseLoc.x-targetSize, mouseLoc.y - targetSize, 2 * targetSize, 2 * targetSize);
+          g.setColor(Color.WHITE);
+          g.fillOval(mouseLoc.x-2, mouseLoc.y-2, 5, 5);
+          g.setColor(Color.RED);
+          g.drawOval(mouseLoc.x-2, mouseLoc.y-2, 5, 5);
+        }else {
+          g.setColor(Color.GREEN);
+          g.setStroke(new BasicStroke(2));
+          g.drawLine(mouseLoc.x+targetSize, mouseLoc.y, mouseLoc.x-targetSize, mouseLoc.y);
+          g.drawLine(mouseLoc.x, mouseLoc.y + targetSize, mouseLoc.x, mouseLoc.y - targetSize);
+        
+          g.drawOval(mouseLoc.x-targetSize, mouseLoc.y - targetSize, 2 * targetSize, 2 * targetSize);
+          g.setColor(Color.WHITE);
+          g.fillOval(mouseLoc.x-2, mouseLoc.y-2, 5, 5);
+          g.setColor(Color.GREEN);
+          g.drawOval(mouseLoc.x-2, mouseLoc.y-2, 5, 5);
+        }
+        
+        
 
-		}
-		roto.frame = frame;
-	}
-	
-	//Converts all white / grey pixels in last rendered frame to transparent. White - fully transparent,Grey - semi-transparent,  Black - Opaque
-	public BufferedImage getTransparentImage() {
-		BufferedImage frame = roto.frame;
-		BufferedImage out = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-		
-		for(int x = 0; x < this.getWidth(); x++) {
-			for(int  y = 0; y < this.getHeight(); y++) {
-				if(frame.getRGB(x, y) == Color.BLACK.getRGB()) {
-					out.setRGB(x, y, new Color(0,0,0,255).getRGB());
-				}else {
-					Color c = new Color(frame.getRGB(x, y));
-					int greyscale = (int)((c.getRed() + c.getGreen() + c.getBlue()) / 3.0);
-					if(c.getRed() == c.getGreen() && c.getRed()== c.getBlue()) {
-						out.setRGB(x, y, new Color(0,0,0,255-greyscale).getRGB());
-					}else {
-						out.setRGB(x, y, new Color(c.getRed(),c.getGreen(),c.getBlue(),nonWhiteTransparency).getRGB());
-					}
-				}
-			}
-		}
-		return out;
-	}
+      }
+      roto.frame = frame;
+    }
+    
+    //Converts all white / grey pixels in last rendered frame to transparent. White - fully transparent,Grey - semi-transparent,  Black - Opaque
+    public BufferedImage getTransparentImage() {
+      BufferedImage frame = roto.frame;
+      BufferedImage out = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+      
+      for(int x = 0; x < this.getWidth(); x++) {
+        for(int  y = 0; y < this.getHeight(); y++) {
+          if(frame.getRGB(x, y) == Color.BLACK.getRGB()) {
+            out.setRGB(x, y, new Color(0,0,0,255).getRGB());
+          }else {
+            Color c = new Color(frame.getRGB(x, y));
+            int greyscale = (int)((c.getRed() + c.getGreen() + c.getBlue()) / 3.0);
+            if(c.getRed() == c.getGreen() && c.getRed()== c.getBlue()) {
+              out.setRGB(x, y, new Color(0,0,0,255-greyscale).getRGB());
+            }else {
+              out.setRGB(x, y, new Color(c.getRed(),c.getGreen(),c.getBlue(),nonWhiteTransparency).getRGB());
+            }
+          }
+        }
+      }
+      return out;
+    }
 
-    public BufferedImage getInvertedTransparentImage() {
-		  BufferedImage frame = roto.frame;
-		  BufferedImage out = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+      public BufferedImage getInvertedTransparentImage() {
+        BufferedImage frame = roto.frame;
+        BufferedImage out = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 		
 		  for(int x = 0; x < this.getWidth(); x++) {
 			  for(int  y = 0; y < this.getHeight(); y++) {
